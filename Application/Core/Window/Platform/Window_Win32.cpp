@@ -1,11 +1,13 @@
 ﻿#include "Window_Win32.hpp"
 
+#include <GL/GL.h>
+
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_win32.h>
 
 #include <iostream>
-
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Window::Window()
@@ -77,6 +79,11 @@ HWND& Window::GetNativeWindow()
 
 LRESULT Window::HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    if (ImGui_ImplWin32_WndProcHandler(m_WindowHandle, msg, wParam, lParam))
+    {
+        return true;
+    }
+    
     switch (msg)
     {
     case WM_SIZE:
