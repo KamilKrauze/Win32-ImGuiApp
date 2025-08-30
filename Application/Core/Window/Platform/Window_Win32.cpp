@@ -7,7 +7,9 @@
 #include <imgui/backends/imgui_impl_win32.h>
 
 #include <iostream>
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Window::Window()
@@ -22,6 +24,7 @@ Window::Window(const WindowSpec& _spec)
 
 bool Window::Create()
 {
+    ImGui_ImplWin32_EnableDpiAwareness();
     m_wc = { sizeof(m_wc), CS_OWNDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, m_WindowSpec.title, nullptr };
     ::RegisterClassExW(&m_wc);
     m_WindowHandle = ::CreateWindowW(m_wc.lpszClassName, m_WindowSpec.title, WS_OVERLAPPEDWINDOW, 0, 0, m_WindowSpec.width, m_WindowSpec.height, nullptr, nullptr, m_wc.hInstance, this);

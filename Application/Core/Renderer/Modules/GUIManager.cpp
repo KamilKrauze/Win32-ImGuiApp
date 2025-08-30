@@ -33,10 +33,11 @@ void GUIManager::Initialize()
     ImGui::SetCurrentContext(m_ImGuiContext);
 
     ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;    // Enable Gamepad Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigFlags =
+        ImGuiConfigFlags_NavEnableKeyboard  // Enable Keyboard Control
+        | ImGuiConfigFlags_NavEnableGamepad // Enable Gamepad Controls
+        | ImGuiConfigFlags_DockingEnable   // Enable Docking
+        | ImGuiConfigFlags_ViewportsEnable;
 
     AppendWin32Hooks();
 }
@@ -118,12 +119,11 @@ void GUIManager::RenderGUI()
     //     
     //     ImGui::End();
     // }
-    
-    ImGui::Render();
 }
 
 void GUIManager::UpdateGUIData()
 {
+    ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     ImGuiIO& io = ImGui::GetIO();
