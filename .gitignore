@@ -1,0 +1,6 @@
+
+/.vs/
+/build/
+/Application/obj/**
+*.sln
+*.vcxproj*
