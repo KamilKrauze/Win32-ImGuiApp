@@ -3,7 +3,7 @@
 
 #include "Core/Window/Window.hpp"
 
-template<typename RendererT>
+template<typename RendererT, typename RendererContextT, typename DeviceContextT>
 class RendererBase
 {
 protected:
@@ -39,6 +39,16 @@ public:
     void MakeAsCurrent() const
     {
         static_cast<RendererT*>(this)->MakeAsCurrent();
+    }
+
+    RendererContextT& GetRendererContextRef()
+    {
+        return static_cast<RendererT*>(this)->GetRendererContextRef();
+    }
+
+    DeviceContextT& GetDeviceContextRef()
+    {
+        return static_cast<RendererT*>(this)->GetDeviceContextRef();
     }
 
 protected:

@@ -1,7 +1,6 @@
 ﻿#include "Core/Renderer/Modules/GUIManager.h"
 
 #include <iostream>
-#include <__msvc_ostream.hpp>
 
 #include "Core/Window/Window.hpp"
 #include "Core/Renderer/Renderer.hpp"
@@ -101,24 +100,24 @@ static int counter = 0;
 
 void GUIManager::RenderGUI()
 {
-    // {
-    //     ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-    //
-    //     ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-    //
-    //     ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-    //     ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-    //
-    //     if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-    //     {
-    //         counter++;
-    //         std::cout << "Counter: " << counter << std::endl;
-    //     }
-    //     ImGui::SameLine();
-    //     ImGui::Text("counter = %d", counter);
-    //     
-    //     ImGui::End();
-    // }
+    {
+        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+    
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+    
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+    
+        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+        {
+            counter++;
+            std::cout << "Counter: " << counter << std::endl;
+        }
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
+        
+        ImGui::End();
+    }
 }
 
 void GUIManager::UpdateGUIData()
@@ -147,11 +146,12 @@ void GUIManager::AppendWin32Hooks()
     ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
     IM_ASSERT(platform_io.Renderer_CreateWindow == NULL);
     IM_ASSERT(platform_io.Renderer_DestroyWindow == NULL);
-    IM_ASSERT(platform_io.Renderer_SwapBuffers == NULL);
     IM_ASSERT(platform_io.Platform_RenderWindow == NULL);
+    IM_ASSERT(platform_io.Renderer_SwapBuffers == NULL);
+
     platform_io.Renderer_CreateWindow  = Hook_CreateWindow;
     platform_io.Renderer_DestroyWindow = Hook_DestroyWindow;
-    platform_io.Renderer_RenderWindow  = Hook_RenderWindow;
+    platform_io.Platform_RenderWindow  = Hook_RenderWindow;
     platform_io.Renderer_SwapBuffers   = Hook_SwapBuffers;
 #endif
 }
@@ -163,8 +163,23 @@ void GUIManager::Hook_CreateWindow(ImGuiViewport* viewport)
 
     auto* data = IM_NEW(WGL_WindowData);
     HWND hwnd = (HWND)viewport->PlatformHandle;
+
+    HDC hDc = ::GetDC(hwnd);
+    PIXELFORMATDESCRIPTOR pfd = {};
+    pfd.nSize = sizeof(pfd);
+    pfd.nVersion = 1;
+    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    pfd.iPixelType = PFD_TYPE_RGBA;
+    pfd.cColorBits = 32;
+
+    const int pf = ::ChoosePixelFormat(hDc, &pfd);
+    if (pf == 0)
+        return;
+    if (::SetPixelFormat(hDc, pf, &pfd) == FALSE)
+        return;
+    
     data->hDC = ::GetDC(hwnd);
-    data->hGLRC = wglCreateContext(data->hDC);
+    data->hGLRC = wglGetCurrentContext();
 
     viewport->RendererUserData = data;
 }

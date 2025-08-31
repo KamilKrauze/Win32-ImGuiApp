@@ -9,7 +9,7 @@ struct DeviceContext
     HDC handle = nullptr;
 };
 
-class Renderer : RendererBase<Renderer>
+class Renderer : RendererBase<Renderer, HGLRC, DeviceContext>
 {
 public:
     Renderer() = default;
@@ -26,6 +26,11 @@ public:
     
     void MakeAsCurrentContext() const;
 
+/// DATA ACCESS ///
+public:
+    HGLRC& GetRenderContextRef();
+    DeviceContext& GetDeviceContextRef();
+    
 private:
     bool CreateDeviceWGL();
     void CleanupDeviceWGL() const;

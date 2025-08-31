@@ -38,8 +38,7 @@ int main()
 		}
 
 		guiManager.NewFrame();
-
-		ImGui::ShowDemoWindow();
+		
 		
 		guiManager.RenderGUI();
 		renderer.ClearFrameBuffer();

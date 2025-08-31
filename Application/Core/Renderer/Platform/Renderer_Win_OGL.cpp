@@ -37,7 +37,6 @@ void Renderer::Draw()
 void Renderer::ClearFrameBuffer()
 {
     auto [width, height] = m_WindowReference->GetWindowSize();
-    std::cout << width << ", " << height << "\n"; 
     glViewport(0, 0, width, height);
     glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -46,6 +45,16 @@ void Renderer::ClearFrameBuffer()
 void Renderer::MakeAsCurrentContext() const
 {
     wglMakeCurrent(m_DeviceContext.handle, m_RenderContextHandle);
+}
+
+HGLRC& Renderer::GetRenderContextRef()
+{
+    return m_RenderContextHandle;
+}
+
+DeviceContext& Renderer::GetDeviceContextRef()
+{
+    return m_DeviceContext;
 }
 
 bool Renderer::CreateDeviceWGL()
